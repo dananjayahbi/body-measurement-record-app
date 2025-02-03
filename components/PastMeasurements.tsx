@@ -42,18 +42,28 @@ export default function PastMeasurements() {
   }, []);
 
   // Handle Delete
-  const handleDelete = async (id: string) => {
-    const res = await fetch("/api/measurements", {
-      method: "DELETE",
-      body: JSON.stringify({ id }),
-    });
+  const handleDelete = (id: string) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this record?",
+      content:
+        "This action cannot be undone and will also remove the associated image.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        const res = await fetch("/api/measurements", {
+          method: "DELETE",
+          body: JSON.stringify({ id }),
+        });
 
-    if (res.ok) {
-      message.success("Record deleted successfully!");
-      fetchData(); // Refresh records
-    } else {
-      message.error("Failed to delete record.");
-    }
+        if (res.ok) {
+          message.success("Record deleted successfully!");
+          fetchData(); // Refresh records
+        } else {
+          message.error("Failed to delete record.");
+        }
+      },
+    });
   };
 
   const columns = [
