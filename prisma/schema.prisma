@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./database.sqlite"
+}
+
+model Measurement {
+  id            String   @id @default(uuid())
+  date          DateTime @default(now())
+  weight        Float
+  chestWidth    Float
+  shoulderWidth Float
+  waistWidth    Float
+  leftArm       Float
+  rightArm      Float
+  leftWrist     Float
+  rightWrist    Float
+  leftForearm   Float
+  rightForearm  Float
+  leftThigh     Float
+  rightThigh    Float
+  imageUrl      String
+}

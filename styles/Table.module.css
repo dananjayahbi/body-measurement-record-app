@@ -1,0 +1,11 @@
+.fullWidthTable {
+    width: 100%;
+    max-width: 100%;
+  }
+  .ant-table {
+    width: 100% !important;
+  }
+  .ant-card-body {
+    padding: 20px;
+  }
+  
