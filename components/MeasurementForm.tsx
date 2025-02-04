@@ -1,7 +1,22 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import {
+  Form,
+  InputNumber,
+  Button,
+  Upload,
+  message,
+  Row,
+  Col,
+  DatePicker,
+} from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+
 interface MeasurementData {
   id: string;
+  date: string;
   weight: number;
   chestWidth: number;
   shoulderWidth: number;
@@ -16,10 +31,6 @@ interface MeasurementData {
   rightThigh: number;
 }
 
-import { useState, useEffect } from "react";
-import { Form, InputNumber, Button, Upload, message, Row, Col } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-
 export default function MeasurementForm({
   closeModal,
   initialData,
@@ -33,7 +44,10 @@ export default function MeasurementForm({
 
   useEffect(() => {
     if (initialData) {
-      form.setFieldsValue(initialData);
+      form.setFieldsValue({
+        ...initialData,
+        date: initialData.date ? dayjs(initialData.date) : null, // ✅ Convert to Ant Design's DatePicker format
+      });
     }
   }, [initialData]);
 
@@ -44,11 +58,16 @@ export default function MeasurementForm({
   const onFinish = async (values: any) => {
     setLoading(true);
 
+    const formattedValues = {
+      ...values,
+      date: values.date ? values.date.format("YYYY-MM-DD") : undefined, // ✅ Ensure correct date format
+    };
+
     const formData = new FormData();
     if (initialData?.id) {
       formData.append("id", initialData.id); // ✅ Ensure the ID is included
     }
-    formData.append("data", JSON.stringify(values));
+    formData.append("data", JSON.stringify(formattedValues));
 
     if (file) {
       formData.append("file", file); // ✅ Add new file if exists
@@ -79,6 +98,19 @@ export default function MeasurementForm({
       }}
     >
       <Form form={form} onFinish={onFinish} layout="vertical">
+        {/* Date Picker */}
+        <Row gutter={16}>
+          <Col span={24}>
+            <Form.Item
+              label="Measurement Date"
+              name="date"
+              rules={[{ required: true, message: "Please select a date!" }]}
+            >
+              <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
+            </Form.Item>
+          </Col>
+        </Row>
+
         {/* Image Upload */}
         <Row gutter={16} justify="center">
           <Col span={24}>

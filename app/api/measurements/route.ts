@@ -65,7 +65,6 @@ export async function GET() {
 }
 
 // Update a record
-// Update a record (PUT request)
 export async function PUT(req: Request) {
   try {
     const formData = await req.formData();
@@ -107,10 +106,14 @@ export async function PUT(req: Request) {
       imageUrl = `/assets/${file.name}`;
     }
 
-    // Update the record in the database
+    // Update the record, including the date
     const updatedMeasurement = await prisma.measurement.update({
       where: { id },
-      data: { ...jsonData, imageUrl },
+      data: {
+        ...jsonData,
+        imageUrl,
+        date: jsonData.date ? new Date(jsonData.date) : existingRecord.date, // ✅ Ensure date updates
+      },
     });
 
     return NextResponse.json(updatedMeasurement);
