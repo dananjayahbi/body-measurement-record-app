@@ -15,7 +15,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 interface MeasurementData {
-  id: string;
+  id?: string; // Optional for new records
   date: string;
   weight: number;
   chestWidth: number;
@@ -46,8 +46,10 @@ export default function MeasurementForm({
     if (initialData) {
       form.setFieldsValue({
         ...initialData,
-        date: initialData.date ? dayjs(initialData.date) : null, // ✅ Convert to Ant Design's DatePicker format
+        date: initialData.date ? dayjs(initialData.date) : null,
       });
+    } else {
+      form.resetFields(); // Reset form for new records
     }
   }, [initialData]);
 
@@ -60,29 +62,49 @@ export default function MeasurementForm({
 
     const formattedValues = {
       ...values,
-      date: values.date ? values.date.format("YYYY-MM-DD") : undefined, // ✅ Ensure correct date format
+      date: values.date ? values.date.format("YYYY-MM-DD") : undefined,
     };
 
     const formData = new FormData();
+
     if (initialData?.id) {
-      formData.append("id", initialData.id); // ✅ Ensure the ID is included
-    }
-    formData.append("data", JSON.stringify(formattedValues));
+      // Update existing record
+      formData.append("id", initialData.id);
+      formData.append("data", JSON.stringify(formattedValues));
 
-    if (file) {
-      formData.append("file", file); // ✅ Add new file if exists
-    }
+      if (file) {
+        formData.append("file", file);
+      }
 
-    const response = await fetch("/api/measurements", {
-      method: "PUT",
-      body: formData,
-    });
+      const response = await fetch("/api/measurements", {
+        method: "PUT",
+        body: formData,
+      });
 
-    if (response.ok) {
-      message.success("Measurement updated successfully!");
-      closeModal();
+      if (response.ok) {
+        message.success("Measurement updated successfully!");
+        closeModal();
+      } else {
+        message.error("Error updating data.");
+      }
     } else {
-      message.error("Error updating data.");
+      // Create new record
+      if (file) {
+        formData.append("file", file);
+      }
+      formData.append("data", JSON.stringify(formattedValues));
+
+      const response = await fetch("/api/measurements", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        message.success("Measurement added successfully!");
+        closeModal();
+      } else {
+        message.error("Error adding data.");
+      }
     }
 
     setLoading(false);
@@ -305,7 +327,7 @@ export default function MeasurementForm({
         <Row justify="center">
           <Col>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Save Data
+              {initialData ? "Update Data" : "Save Data"}
             </Button>
           </Col>
         </Row>

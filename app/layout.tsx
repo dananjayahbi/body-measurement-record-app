@@ -3,7 +3,7 @@ import ClientLayout from "@/components/ClientLayout";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Fitness Tracker",
+  title: "Body Measurement Tracker",
   description: "Track your body progress over time",
 };
 

@@ -7,28 +7,33 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    const {
-      weight,
-      chestWidth,
-      shoulderWidth,
-      waistWidth,
-      leftArm,
-      rightArm,
-      leftWrist,
-      rightWrist,
-      leftForearm,
-      rightForearm,
-      leftThigh,
-      rightThigh,
-      imageUrl,
-    } = await req.json();
+    const formData = await req.formData();
+    const jsonData = JSON.parse(formData.get("data") as string);
+    const file = formData.get("file") as File | null;
 
-    if (!weight || !chestWidth || !shoulderWidth || !waistWidth) {
+    const { date, weight, chestWidth, shoulderWidth, waistWidth, leftArm, rightArm, leftWrist, rightWrist, leftForearm, rightForearm, leftThigh, rightThigh } = jsonData;
+
+    if (!date || !weight || !chestWidth || !shoulderWidth || !waistWidth) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    let imageUrl = "";
+
+    // Handle image upload
+    if (file) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const uploadDir = path.join(process.cwd(), "public/assets");
+      await mkdir(uploadDir, { recursive: true });
+
+      const filePath = path.join(uploadDir, file.name);
+      await writeFile(filePath, buffer);
+      imageUrl = `/assets/${file.name}`;
     }
 
     const newMeasurement = await prisma.measurement.create({
       data: {
+        date: new Date(date),
         weight,
         chestWidth,
         shoulderWidth,
@@ -47,7 +52,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(newMeasurement, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to save data", details: error }, { status: 500 });
+    return NextResponse.json({ error: "Failed to save data", details: (error as Error).message }, { status: 500 });
   }
 }
 
@@ -118,7 +123,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(updatedMeasurement);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update data", details: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update data", details: (error as Error).message }, { status: 500 });
   }
 }
 
