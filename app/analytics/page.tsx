@@ -103,9 +103,9 @@ export default function Analytics() {
         )}
       </Card>
       <div className="min-h-screen bg-gray-100 flex flex-col items-center">
-      <h1 className="text-2xl font-bold my-6">My Body Growth Gallery</h1>
-      <ImageGallery />
-    </div>
+        <h1 className="text-2xl font-bold my-6">My Body Growth Gallery</h1>
+        <ImageGallery />
+      </div>
     </PageLoader>
   );
 }
