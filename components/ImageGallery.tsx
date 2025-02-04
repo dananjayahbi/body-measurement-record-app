@@ -51,7 +51,7 @@ export default function ImageGallery() {
             className="relative overflow-hidden rounded-lg shadow-md"
           >
             <Image
-              src={img.imageUrl}
+              src={`/api/images/${img.imageUrl.split("/").pop()}`} // ✅ Use API route
               alt={`Body Growth ${img.date}`}
               width={300}
               height={400}

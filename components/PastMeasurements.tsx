@@ -81,7 +81,7 @@ export default function PastMeasurements() {
         url ? (
           <Image
             width={120}
-            src={url.startsWith("/") ? url : `/assets/${url}`}
+            src={`/api/images/${url.split("/").pop()}`} // ✅ Use dynamic API route
             alt="Progress Image"
           />
         ) : (
