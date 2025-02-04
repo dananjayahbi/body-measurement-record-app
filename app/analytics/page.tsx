@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Spin, Card, Select } from "antd";
 import BodyPartChart from "@/components/BodyPartChart";
 import PageLoader from "@/components/PageLoader";
+import ImageGallery from "@/components/ImageGallery";
 
 type Measurement = {
   id: string;
@@ -101,6 +102,10 @@ export default function Analytics() {
           </>
         )}
       </Card>
+      <div className="min-h-screen bg-gray-100 flex flex-col items-center">
+      <h1 className="text-2xl font-bold my-6">My Body Growth Gallery</h1>
+      <ImageGallery />
+    </div>
     </PageLoader>
   );
 }
